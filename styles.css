@@ -1,0 +1,620 @@
+:root {
+  color-scheme: dark;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+  background: #0b1220;
+}
+
+.intro-verb-animation {
+  display:inline-block;
+  width:20%;
+  text-align:left;
+  font-style: italic;
+  line-height:14px;
+}
+
+.reveal {
+  font-size: 1.1rem;
+}
+
+.vscode-sim {
+  min-height: 520px;
+  height: 520px; /* fixed height anchors the flex chain so internal panels can scroll */
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+.vscode-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.vscode-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  height: 30px;
+  background: #323233;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  color: #cccccc;
+  flex-shrink: 0;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.toolbar-item {
+  font-size: 0.72rem;
+  color: #cccccc;
+  padding: 0 8px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toolbar-project {
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: rgba(148, 163, 184, 0.08);
+  color: #cccccc;
+  font-size: 0.72rem;
+}
+
+.vscode-main {
+  /* flex row instead of grid: flexbox propagates definite heights reliably,
+     which is required for overflow-y: auto to work in nested panels */
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.vscode-activity {
+  flex: 0 0 48px; /* was a grid column — now explicit flex sizing */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 4px 0;
+  background: #2c2c2c;
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.activity-icon {
+  width: 48px;
+  height: 44px;
+  border-radius: 0;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #858585;
+  cursor: pointer;
+}
+
+.activity-icon:hover {
+  color: #cccccc;
+}
+
+.vscode-sidebar {
+  flex: 0 0 150px; /* was a grid column — now explicit flex sizing */
+  background: #252526;
+  border-radius: 0;
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  font-size: 0.67rem;
+  letter-spacing: 0.1em;
+  color: #bbbcbd;
+  padding: 8px 12px 4px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.sidebar-subtitle {
+  font-size: 0.69rem;
+  color: #bbbcbd;
+  padding: 0 12px 6px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.file-list li {
+  padding: 3px 8px;
+  border-radius: 0;
+  color: #cccccc;
+  font-size: 0.76rem;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.file-folder {
+  padding: 3px 8px;
+  color: #cccccc;
+  font-size: 0.76rem;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
+
+.file-folder:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.folder-icon {
+  color: #dcb67a;
+  font-size: 0.6rem;
+  flex-shrink: 0;
+}
+
+.file-list li:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.file-list li.active {
+  background: #094771;
+  color: #ffffff;
+}
+
+.vscode-content {
+  display: flex; /* same reason as vscode-main: flex propagates definite heights */
+  flex-direction: row;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.editor-terminal-col {
+  flex: 3; /* 3/5 of width — mirrors the old 1.5fr out of 2.5fr total */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.editor-region {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  flex: 2;
+}
+
+.editor-tabs {
+  display: flex;
+  gap: 0;
+  background: #2d2d2d;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.editor-tab {
+  padding: 0 14px;
+  height: 35px;
+  border-radius: 0;
+  background: #2d2d2d;
+  color: #969696;
+  font-size: 0.76rem;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.editor-tab.active {
+  background: #1e1e1e;
+  color: #ffffff;
+  border-top: 1px solid #007acc;
+}
+
+.vscode-editor {
+  background: #1e1e1e;
+  border-radius: 0;
+  border: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-body {
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  padding: 10px 0;
+}
+
+/* Reveal.js sets .reveal pre { margin: 20px auto } (specificity 0,1,1).
+   This rule matches that specificity and wins because styles.css loads last. */
+.editor-body pre {
+  margin: 0;
+}
+
+.line-gutter {
+  padding: 0 10px 0 14px;
+  margin: 0;
+  /* Override Reveal.js: .reveal pre { width: 90%; overflow: auto } */
+  width: auto;
+  max-width: 2px;
+  overflow: hidden; /* no independent scrollbar — parent .editor-body scrolls both together */
+  color: #858585;
+  text-align: right;
+  user-select: none;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.code-content {
+  padding: 0 14px;
+  margin: 0;
+  flex: 1;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-align: left;
+  white-space: pre;
+  /* Override the monokai theme background so the existing #1e1e1e shows through */
+  background: transparent;
+}
+
+pre.code-content { font-size: 0.75rem; }
+
+.panel {
+  background: #1e1e1e;
+  border-radius: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 4px 10px;
+  background: #2d2d2d;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  color: #cccccc;
+  font-size: 0.73rem;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.panel-body {
+  padding: 8px 10px;
+  flex: 1;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.76rem;
+  color: #d4d4d4;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  min-height: 0;
+}
+
+.terminal-panel {
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  background: #1e1e1e;
+  min-height: 0;
+  flex: 1;
+}
+
+.terminal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.terminal-line.command {
+  color: #cccccc;
+}
+
+.terminal-line.output {
+  color: #cccccc;
+}
+
+.terminal-prompt {
+  color: #4ec9b0;
+  user-select: none;
+}
+
+.chat-panel {
+  flex: 2; /* 2/5 of width — mirrors the old 1fr out of 2.5fr total */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chat-panel .panel-body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  /* display: block overrides the flex-column from the base .panel-body rule.
+     A flex-column container fights overflow-y: auto because flex children resist
+     being bounded — they keep expanding the container instead of scrolling.
+     Plain block layout + fixed height + overflow-y: auto is the reliable pattern. */
+  display: block;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.chat-bubble {
+  border-radius: 3px;
+  padding: 6px 10px;
+  margin-bottom: 5px;
+  line-height: 1.5;
+  font-size: 0.76rem;
+}
+
+.chat-bubble.user {
+  background: rgba(0, 122, 204, 0.25);
+  color: #cce5ff;
+  max-width: 92%;
+  margin-left: auto; /* right-align; replaces align-self: flex-end now that parent is display: block */
+}
+
+.chat-bubble.assistant {
+  background: rgba(255, 255, 255, 0.07);
+  color: #f0f0f0;
+}
+
+/* Inline code — lighter background, rounded corners */
+.chat-bubble.assistant code {
+  background: rgba(255, 255, 255, 0.13);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.92em;
+}
+
+/* Code blocks — full bubble width, override Reveal.js width:90%/margin:auto */
+.chat-bubble.assistant pre {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 7px 10px;
+  margin: 4px 0;
+  width: auto;
+  max-width: none;
+  overflow-x: auto;
+  font-size: 0.65rem;
+}
+
+/* Reset the inline code style when it's inside a code block */
+.chat-bubble.assistant pre code {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  font-size: 1em;
+}
+
+/* Override Reveal.js white-theme heading colors inside assistant bubbles */
+.chat-bubble.assistant h1,
+.chat-bubble.assistant h2,
+.chat-bubble.assistant h3,
+.chat-bubble.assistant h4 {
+  color: #ffffff;
+  margin: 6px 0 3px;
+  line-height: 1.3;
+
+}
+
+.chat-bubble.assistant p { margin: 2px 0 }
+
+/* Tighten list indentation (browser default is 40px, reveal.js doesn't reduce it) */
+.chat-bubble.assistant ul,
+.chat-bubble.assistant ol {
+  padding-left: 18px;
+  margin: 3px 0;
+  width: 92%;
+}
+
+.verbing-text {
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.chat-waiting {
+  color: #6e6e6e;
+  font-size: 0.74rem;
+  font-style: italic;
+  padding: 4px 2px;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.chat-prompt-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.chat-prompt-title {
+  padding: 7px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chat-prompt-command {
+  padding: 5px 10px;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.74rem;
+  color: #4fc1ff;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.chat-prompt-description {
+  padding: 5px 10px;
+  font-size: 0.72rem;
+  color: #888;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* marked wraps content in <p> tags — collapse their margins so the card padding holds */
+.chat-prompt-description p {
+  margin: 0;
+}
+.chat-prompt-description p + p {
+  margin-top: 4px;
+}
+
+.chat-prompt-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.chat-prompt-yes {
+  background: #007acc;
+  color: #ffffff;
+  border: none;
+  padding: 7px;
+  font-size: 0.74rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.chat-prompt-yes:hover {
+  background: #1a8cdb;
+}
+
+.chat-prompt-no {
+  background: rgba(255, 255, 255, 0.03);
+  color: #999;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 7px;
+  font-size: 0.74rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.chat-prompt-no:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.chat-input-area {
+  padding: 6px 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  background: #1e1e1e;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.chat-input {
+  flex: 1;
+  background: #3c3c3c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  color: #d4d4d4;
+  padding: 5px 8px;
+  font-size: 0.73rem;
+  font-family: inherit;
+  outline: none;
+  caret-color: #4fc1ff;
+}
+
+.chat-input:focus {
+  border-color: rgba(0, 122, 204, 0.6);
+}
+
+.chat-input::placeholder {
+  color: #6e6e6e;
+}
+
+.chat-send-btn {
+  background: #007acc;
+  border: none;
+  border-radius: 2px;
+  color: #ffffff;
+  padding: 4px 9px;
+  cursor: pointer;
+  font-size: 0.73rem;
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
+.chat-send-btn:hover {
+  opacity: 1;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  height: 22px;
+  background: #007acc;
+  color: #ffffff;
+  font-size: 0.68rem;
+  flex-shrink: 0;
+}
+
+.status-bar span {
+  margin-right: 0;
+}
+
+.status-left,
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
