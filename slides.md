@@ -77,6 +77,26 @@
 
 ---
 
+## Supply-chain attack
+
+This slide can help explain how a supply-chain attack works, based on recent news about salad kits.
+
+![salad-surprise](./images/supply-chain-attack.png)
+
+Suppose Mark is building a new business "Salad Surprises!" where he buys salad kits and then recombines/repackages them into new and surprising flavor combinations.
+
+---
+
+## Supply-chain attack
+
+Unfortunately, Mark is vulnerable to a supply-chain attck.
+
+![salad-surprise](./images/supply-chain-attack-2.png)
+
+If one of the salad kits he buys is unsafe, then his product will be unsafe too.
+
+---
+
 ## Normal slide
 
 This slide is regular Markdown content.
