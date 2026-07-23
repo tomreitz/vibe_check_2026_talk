@@ -1,5 +1,13 @@
 const VscodeSimulatorPlugin = {
   id: 'vscode-simulator',
+  registeredScripts: {},
+
+  // Called from an executable <script data-vscode-script> block to register a simulator
+  // script as a real JS object literal (supports template-literal strings, comments, etc.)
+  // instead of a <script type="application/json"> block, which only allows strict JSON.
+  registerScript(key, script) {
+    this.registeredScripts[key] = script;
+  },
 
   init(deck) {
     this.deck = deck;
@@ -52,7 +60,24 @@ const VscodeSimulatorPlugin = {
     });
   },
 
+  // RevealMarkdown injects each slide's HTML via innerHTML, and scripts inserted that way
+  // never auto-execute (a standard HTML behavior, not a bug). So <script data-vscode-script>
+  // blocks are re-created as fresh <script> elements here, which forces the browser to run them.
+  activateInlineScripts(section) {
+    const scripts = section.querySelectorAll('script[data-vscode-script]');
+    scripts.forEach(oldScript => {
+      if (oldScript.dataset.vscodeScriptRun === 'true') {
+        return;
+      }
+      oldScript.dataset.vscodeScriptRun = 'true';
+      const newScript = document.createElement('script');
+      newScript.textContent = oldScript.textContent;
+      document.body.appendChild(newScript);
+    });
+  },
+
   mountSimulatorsInSection(section) {
+    this.activateInlineScripts(section);
     const placeholders = section.querySelectorAll('.vscode-sim');
     placeholders.forEach(placeholder => {
       if (placeholder.dataset.simMounted === 'true') {
@@ -89,6 +114,10 @@ const VscodeSimulatorPlugin = {
   loadScript(scriptKey) {
     if (!scriptKey) {
       return null;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(this.registeredScripts, scriptKey)) {
+      return this.registeredScripts[scriptKey];
     }
 
     const candidates = [
@@ -144,8 +173,44 @@ const VscodeSimulatorPlugin = {
   }
 };
 
+// Global default for whether `chat-assistant` actions are read aloud via the Web Speech API.
+// Override per-action with `"speechSynthesis": false`, or flip this to change the default for the whole deck.
+VscodeSimulatorPlugin.defaultSpeechSynthesis = true;
+
 function sleep(duration) {
   return new Promise(resolve => setTimeout(resolve, duration));
+}
+
+// Returns a promise that resolves once the utterance finishes (or errors out),
+// so callers can await it to pause playback until the line is done being spoken.
+function speakText(text) {
+  if (typeof speechSynthesis === 'undefined') {
+    return Promise.resolve();
+  }
+  const utterance = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    utterance.voice = voices[0];
+    utterance.rate = 2;    // 0.1–10, 1 = normal
+    utterance.pitch = 1;   // 0–2, 1 = normal
+    utterance.volume = 1;  // 0–1
+  }
+  return new Promise(resolve => {
+    utterance.addEventListener('end', resolve, { once: true });
+    utterance.addEventListener('error', resolve, { once: true });
+    speechSynthesis.speak(utterance);
+  });
+}
+
+// Resolution order: per-action flag > per-simulator config > global default.
+function resolveSpeechSynthesis(action, config) {
+  if (action.speechSynthesis != null) {
+    return action.speechSynthesis;
+  }
+  if (config && config.speechSynthesis != null) {
+    return config.speechSynthesis;
+  }
+  return VscodeSimulatorPlugin.defaultSpeechSynthesis;
 }
 
 const CHAT_WAIT_VERBS = [
@@ -270,6 +335,16 @@ function renderFileTree(items, prefix, depth, activePath, onSelect, openFolders,
 // Reveal.getPlugin('*') is safe to call here because simulators are only mounted after the 'ready' event.
 function parseMarkdown(text) {
   return Reveal.getPlugin('markdown').marked.parse(text);
+}
+
+// Renders markdown to HTML then reads back the plain text, so headings/lists/code fences
+// don't get spoken aloud as literal characters (e.g. "##", "*", backticks).
+function markdownToPlainText(markdown) {
+  const container = document.createElement('div');
+  container.innerHTML = parseMarkdown(markdown);
+  container.querySelectorAll('p, div, li, h1, h2, h3, h4, h5, h6, br, blockquote, pre, tr')
+    .forEach(el => el.insertAdjacentText('afterend', ' '));
+  return (container.textContent || '').replace(/\s+/g, ' ').trim();
 }
 
 const EXTENSION_TO_LANGUAGE = {
@@ -446,12 +521,22 @@ function VscodeSimulator({ script, onReady }) {
         const role = action.type === 'chat-user' ? 'user' : 'assistant';
         setChatDraftRole(role);
         setChatDraft('');
+        let speechPromise = null;
+        if (role === 'assistant' && !skipTyping) {
+          const scriptConfig = latestScriptRef.current.config || {};
+          if (resolveSpeechSynthesis(action, scriptConfig)) {
+            speechPromise = speakText(markdownToPlainText(action.text));
+          }
+        }
         if (skipTyping) {
           appendChatMessage({ role, text: action.text });
         } else {
           await typeText(action.text, action.speed || 60, value => setChatDraft(value));
           appendChatMessage({ role, text: action.text });
           setChatDraft('');
+        }
+        if (speechPromise) {
+          await speechPromise;
         }
         setChatDraftRole('');
         break;
@@ -463,6 +548,27 @@ function VscodeSimulator({ script, onReady }) {
           await runVerbAnimation(action.speed, action.hold, setChatWaiting, () => Date.now() >= endTime);
         }
         break;
+
+      case 'play-audio': {
+        if (skipTyping) {
+          break;
+        }
+        const audio = new Audio(action.src);
+        if (action.volume != null) {
+          audio.volume = action.volume;
+        }
+        const playback = audio.play();
+        if (playback && playback.catch) {
+          playback.catch(error => console.warn('Audio playback failed:', error));
+        }
+        if (action.waitForEnd) {
+          await new Promise(resolve => {
+            audio.addEventListener('ended', resolve, { once: true });
+            audio.addEventListener('error', resolve, { once: true });
+          });
+        }
+        break;
+      }
 
       case 'chat-prompt':
         setChatPrompt({ title: action.title, command: action.command, description: action.description });
@@ -588,6 +694,8 @@ function VscodeSimulator({ script, onReady }) {
 
   const activeIndex = actionIndexRef.current;
   const totalSteps = script.actions.length;
+  const config = script.config || {};
+  const chatOnly = config.chatOnly === true;
 
   return React.createElement('div', { className: 'vscode-shell' },
     React.createElement('div', { className: 'vscode-toolbar' },
@@ -601,7 +709,7 @@ function VscodeSimulator({ script, onReady }) {
       )
     ),
     React.createElement('div', { className: 'vscode-main' },
-      React.createElement('div', { className: 'vscode-activity' },
+      chatOnly ? null : React.createElement('div', { className: 'vscode-activity' },
         ['Explorer', 'Search', 'Git', 'Run', 'Extensions', 'Settings'].map(label =>
           React.createElement('div', { key: label, className: 'activity-icon', title: label },
             React.createElement('svg', {
@@ -615,7 +723,7 @@ function VscodeSimulator({ script, onReady }) {
           )
         )
       ),
-      React.createElement('div', { className: 'vscode-sidebar' },
+      chatOnly ? null : React.createElement('div', { className: 'vscode-sidebar' },
         React.createElement('div', { className: 'sidebar-header' }, 'EXPLORER'),
         React.createElement('div', { className: 'sidebar-subtitle' }, 'WORKSPACE'),
         React.createElement('ul', { className: 'file-list' },
@@ -623,7 +731,7 @@ function VscodeSimulator({ script, onReady }) {
         )
       ),
       React.createElement('div', { className: 'vscode-content' },
-        React.createElement('div', { className: 'editor-terminal-col' },
+        chatOnly ? null : React.createElement('div', { className: 'editor-terminal-col' },
           React.createElement('div', { className: 'editor-region' },
             React.createElement('div', { className: 'editor-tabs' },
               React.createElement('div', { className: 'editor-tab active' }, activeFile.path)
@@ -664,7 +772,7 @@ function VscodeSimulator({ script, onReady }) {
             )
           )
         ),
-        React.createElement('div', { className: 'panel chat-panel' },
+        React.createElement('div', { className: chatOnly ? 'panel chat-panel chat-panel-full' : 'panel chat-panel' },
             React.createElement('div', { className: 'panel-header' }, 'Claude Code'),
             React.createElement('div', { className: 'panel-body', ref: chatPanelBodyRef },
               chatMessages.map((message, index) => {
