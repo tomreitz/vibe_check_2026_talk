@@ -19,9 +19,15 @@ body {
   font-size: 1.1rem;
 }
 
+.reveal .slides section img {
+  max-width: 75%;
+}
+
 .vscode-sim {
-  min-height: 520px;
-  height: 520px; /* fixed height anchors the flex chain so internal panels can scroll */
+  width: 1152px; /* 90% of Reveal's configured 1280px slide width */
+  margin: 0 auto; /* section is a plain block container, so center explicitly */
+  min-height: 648px;
+  height: 648px; /* 90% of Reveal's configured 720px slide height; fixed height anchors the flex chain so internal panels can scroll */
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);

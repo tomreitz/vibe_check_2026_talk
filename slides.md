@@ -29,6 +29,7 @@
       speechSynthesis: true
     },
     actions: [
+      { type: "pause" },
       { type: "chat-user", text: "Hey there, I need to make a presentation about using AI for Summer Week. Can you help?", speed: 50 },
       { type: "chat-wait", duration: 2000, speed: 60 },
       { type: "chat-assistant", text: "Kinda last-minute, no? Well no worries, I'm here for you! But if I'm going to be part of your presentation, I'd like some walk-on music...", delayBefore: 600 },
@@ -64,7 +65,7 @@
   * Compromised packages sailing into production.
   * The "day 300" problem
 
-  ### Part 5: Discussion
+  ### Part 4: Discussion
 
   ### Conclusion: Connecting to EA's values
   * Thoughtful use <-> Human-Centered

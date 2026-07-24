@@ -40,6 +40,21 @@ const VscodeSimulatorPlugin = {
         event.preventDefault();
         event.stopImmediatePropagation();
         sim.prevStep();
+      } else if (event.key === 's' || event.key === 'S') {
+        let handled = false;
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.speaking) {
+          speechSynthesis.cancel();
+          handled = true;
+        }
+        if (activeAudioStop) {
+          activeAudioStop();
+          activeAudioStop = null;
+          handled = true;
+        }
+        if (handled) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
       }
     }, true);
   },
@@ -172,6 +187,9 @@ const VscodeSimulatorPlugin = {
     window.activeVscodeSimulator = null;
   }
 };
+
+// Set while a `play-audio` action's clip is playing, so the 's' key can stop it early.
+let activeAudioStop = null;
 
 // Global default for whether `chat-assistant` actions are read aloud via the Web Speech API.
 // Override per-action with `"speechSynthesis": false`, or flip this to change the default for the whole deck.
@@ -563,9 +581,20 @@ function VscodeSimulator({ script, onReady }) {
         }
         if (action.waitForEnd) {
           await new Promise(resolve => {
-            audio.addEventListener('ended', resolve, { once: true });
-            audio.addEventListener('error', resolve, { once: true });
+            const finish = () => {
+              activeAudioStop = null;
+              resolve();
+            };
+            audio.addEventListener('ended', finish, { once: true });
+            audio.addEventListener('error', finish, { once: true });
+            activeAudioStop = () => {
+              audio.pause();
+              finish();
+            };
           });
+        } else {
+          activeAudioStop = () => audio.pause();
+          audio.addEventListener('ended', () => { activeAudioStop = null; }, { once: true });
         }
         break;
       }
@@ -709,7 +738,7 @@ function VscodeSimulator({ script, onReady }) {
       )
     ),
     React.createElement('div', { className: 'vscode-main' },
-      chatOnly ? null : React.createElement('div', { className: 'vscode-activity' },
+      React.createElement('div', { className: 'vscode-activity' },
         ['Explorer', 'Search', 'Git', 'Run', 'Extensions', 'Settings'].map(label =>
           React.createElement('div', { key: label, className: 'activity-icon', title: label },
             React.createElement('svg', {
