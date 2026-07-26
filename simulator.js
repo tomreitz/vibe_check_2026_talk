@@ -40,6 +40,21 @@ const VscodeSimulatorPlugin = {
         event.preventDefault();
         event.stopImmediatePropagation();
         sim.prevStep();
+      } else if (event.key === 'm' || event.key === 'M') {
+        let handled = false;
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.speaking) {
+          speechSynthesis.cancel();
+          handled = true;
+        }
+        if (activeAudioStop) {
+          activeAudioStop();
+          activeAudioStop = null;
+          handled = true;
+        }
+        if (handled) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
       }
     }, true);
   },
@@ -172,6 +187,9 @@ const VscodeSimulatorPlugin = {
     window.activeVscodeSimulator = null;
   }
 };
+
+// Set while a `play-audio` action's clip is playing, so the 'm' key can stop it early.
+let activeAudioStop = null;
 
 // Global default for whether `chat-assistant` actions are read aloud via the Web Speech API.
 // Override per-action with `"speechSynthesis": false`, or flip this to change the default for the whole deck.
@@ -542,6 +560,10 @@ function VscodeSimulator({ script, onReady }) {
         break;
       }
 
+      case 'show-image':
+        appendChatMessage({ role: 'assistant', image: action.src, alt: action.alt || '' });
+        break;
+
       case 'chat-wait':
         if (!skipDelay) {
           const endTime = Date.now() + (action.duration || 5000);
@@ -563,9 +585,20 @@ function VscodeSimulator({ script, onReady }) {
         }
         if (action.waitForEnd) {
           await new Promise(resolve => {
-            audio.addEventListener('ended', resolve, { once: true });
-            audio.addEventListener('error', resolve, { once: true });
+            const finish = () => {
+              activeAudioStop = null;
+              resolve();
+            };
+            audio.addEventListener('ended', finish, { once: true });
+            audio.addEventListener('error', finish, { once: true });
+            activeAudioStop = () => {
+              audio.pause();
+              finish();
+            };
           });
+        } else {
+          activeAudioStop = () => audio.pause();
+          audio.addEventListener('ended', () => { activeAudioStop = null; }, { once: true });
         }
         break;
       }
@@ -600,7 +633,7 @@ function VscodeSimulator({ script, onReady }) {
     isRunningRef.current = true;
     const actions = latestScriptRef.current.actions || [];
 
-    while (actionIndexRef.current < actions.length) {
+    while (actionIndexRef.current < actions.length && isActiveRef.current) {
       const action = actions[actionIndexRef.current];
       const result = await executeAction(action);
       actionIndexRef.current += 1;
@@ -670,6 +703,9 @@ function VscodeSimulator({ script, onReady }) {
 
   const deactivate = React.useCallback(() => {
     isActiveRef.current = false;
+    if (typeof speechSynthesis !== 'undefined') {
+      speechSynthesis.cancel();
+    }
   }, []);
 
   React.useEffect(() => {
@@ -709,7 +745,7 @@ function VscodeSimulator({ script, onReady }) {
       )
     ),
     React.createElement('div', { className: 'vscode-main' },
-      chatOnly ? null : React.createElement('div', { className: 'vscode-activity' },
+      React.createElement('div', { className: 'vscode-activity' },
         ['Explorer', 'Search', 'Git', 'Run', 'Extensions', 'Settings'].map(label =>
           React.createElement('div', { key: label, className: 'activity-icon', title: label },
             React.createElement('svg', {
@@ -776,6 +812,16 @@ function VscodeSimulator({ script, onReady }) {
             React.createElement('div', { className: 'panel-header' }, 'Claude Code'),
             React.createElement('div', { className: 'panel-body', ref: chatPanelBodyRef },
               chatMessages.map((message, index) => {
+                if (message.image) {
+                  return React.createElement('div', {
+                    key: `assistant-${index}`,
+                    className: 'chat-bubble assistant chat-image-bubble'
+                  }, React.createElement('img', {
+                    className: 'chat-image',
+                    src: message.image,
+                    alt: message.alt || ''
+                  }));
+                }
                 if (message.role === 'assistant') {
                   // Render assistant messages as Markdown HTML
                   return React.createElement('div', {
