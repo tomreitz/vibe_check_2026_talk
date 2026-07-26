@@ -40,7 +40,7 @@ const VscodeSimulatorPlugin = {
         event.preventDefault();
         event.stopImmediatePropagation();
         sim.prevStep();
-      } else if (event.key === 's' || event.key === 'S') {
+      } else if (event.key === 'm' || event.key === 'M') {
         let handled = false;
         if (typeof speechSynthesis !== 'undefined' && speechSynthesis.speaking) {
           speechSynthesis.cancel();
@@ -188,7 +188,7 @@ const VscodeSimulatorPlugin = {
   }
 };
 
-// Set while a `play-audio` action's clip is playing, so the 's' key can stop it early.
+// Set while a `play-audio` action's clip is playing, so the 'm' key can stop it early.
 let activeAudioStop = null;
 
 // Global default for whether `chat-assistant` actions are read aloud via the Web Speech API.
@@ -560,6 +560,10 @@ function VscodeSimulator({ script, onReady }) {
         break;
       }
 
+      case 'show-image':
+        appendChatMessage({ role: 'assistant', image: action.src, alt: action.alt || '' });
+        break;
+
       case 'chat-wait':
         if (!skipDelay) {
           const endTime = Date.now() + (action.duration || 5000);
@@ -629,7 +633,7 @@ function VscodeSimulator({ script, onReady }) {
     isRunningRef.current = true;
     const actions = latestScriptRef.current.actions || [];
 
-    while (actionIndexRef.current < actions.length) {
+    while (actionIndexRef.current < actions.length && isActiveRef.current) {
       const action = actions[actionIndexRef.current];
       const result = await executeAction(action);
       actionIndexRef.current += 1;
@@ -699,6 +703,9 @@ function VscodeSimulator({ script, onReady }) {
 
   const deactivate = React.useCallback(() => {
     isActiveRef.current = false;
+    if (typeof speechSynthesis !== 'undefined') {
+      speechSynthesis.cancel();
+    }
   }, []);
 
   React.useEffect(() => {
@@ -805,6 +812,16 @@ function VscodeSimulator({ script, onReady }) {
             React.createElement('div', { className: 'panel-header' }, 'Claude Code'),
             React.createElement('div', { className: 'panel-body', ref: chatPanelBodyRef },
               chatMessages.map((message, index) => {
+                if (message.image) {
+                  return React.createElement('div', {
+                    key: `assistant-${index}`,
+                    className: 'chat-bubble assistant chat-image-bubble'
+                  }, React.createElement('img', {
+                    className: 'chat-image',
+                    src: message.image,
+                    alt: message.alt || ''
+                  }));
+                }
                 if (message.role === 'assistant') {
                   // Render assistant messages as Markdown HTML
                   return React.createElement('div', {

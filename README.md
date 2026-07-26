@@ -63,6 +63,8 @@ All fields are optional.
 
 `speechSynthesis` resolves in this order, most specific wins: the action's own `speechSynthesis` field → this `config.speechSynthesis` → `VscodeSimulatorPlugin.defaultSpeechSynthesis`.
 
+Press the `m` key while a speechSynthesis is playing to immediately mute it and move on to the next action.
+
 ---
 
 ### File tree
@@ -177,6 +179,17 @@ The global default lives on `VscodeSimulatorPlugin.defaultSpeechSynthesis` (curr
 
 ---
 
+#### `show-image`
+Show an image as an assistant chat bubble, scaled to fit the chat panel.
+```json
+{ "type": "show-image", "src": "images/some-image.jpg" }
+```
+| Field | Default | Description |
+|---|---|---|
+| `alt` | `""` | Alt text for the image |
+
+---
+
 #### `chat-wait`
 Show a rotating "thinking" animation in the chat panel for a given duration — verbs type in and delete in a loop.
 ```json
@@ -201,6 +214,8 @@ Play an audio file (e.g. narration or a voice-over line for a `chat-assistant` m
 | `volume` | `1` | Playback volume, `0`–`1` |
 
 Skipped when fast-forwarding (rewinding to a previous `pause` point replays other actions instantly without re-triggering audio).
+
+Press the `m` key while audio is playing to immediately mute it and move on to the next action.
 
 ---
 

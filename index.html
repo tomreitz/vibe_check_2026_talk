@@ -25,13 +25,14 @@
     <script src="https://unpkg.com/reveal.js@4.5.0/dist/reveal.js"></script>
     <script src="https://unpkg.com/reveal.js@4.5.0/plugin/markdown/markdown.js"></script>
     <script src="https://unpkg.com/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/notes/notes.js"></script>
     <script src="simulator.js"></script>
     <script>
       Reveal.initialize({
         hash: true,
         width: 1280,
         height: 720,
-        plugins: [RevealMarkdown, RevealHighlight, VscodeSimulatorPlugin],
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes, VscodeSimulatorPlugin],
         markdown: {
           smartypants: true
         },

@@ -1,5 +1,6 @@
 :root {
   color-scheme: dark;
+  font-size: 112.5%;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
@@ -469,6 +470,21 @@ pre.code-content { font-size: 0.75rem; }
   padding-left: 18px;
   margin: 3px 0;
   width: 92%;
+}
+
+.chat-image-bubble {
+  padding: 4px;
+  max-width: 92%;
+}
+
+.chat-image {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  max-height: 60vh;
+  height: auto;
+  object-fit: contain;
+  border-radius: 2px;
 }
 
 .verbing-text {
