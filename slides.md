@@ -415,6 +415,15 @@ Note:
 - Let's take 10 minutes to discuss.
 ---
 
+## Summary
+
+EA's use of AI should be connected to our values.
+
+* **Respectfully Human Centered** ↔ Thoughtful use of AI
+* **First Principles Thinking** ↔ Structure-first approach
+* **Evidence-Based** ↔ Correctness (when load-bearing)
+---
+
 <div class="vscode-sim" data-script="final-script"></div>
 
 <script data-vscode-script>
