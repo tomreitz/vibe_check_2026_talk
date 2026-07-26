@@ -1,0 +1,6 @@
+- February, 2026 hackerbot claw finds and exploits many GitHub actions using pull_request_target.
+- Trivy `aqua-bot` PAT stolen.
+- The hackerbot-claw agent didn't just steal credentials; it used them to achieve a near-total repository takeover. The bot temporarily privatized the repository and deleted 178 legitimate historical GitHub releases.  It also published a malicious version of the Trivy VS Code extension.  <-- What did that do?
+- Trivy fixed the vulnerable workflow, and began rotating credentials.  However, they didn't immediately revoke the old creds.  TeamPCP was able to use the still valid old credentials, to exfiltrate the new credentials.  <-- How did Team PCP get the creds; is TeammPCP behind hackerbot-claw?
+- March 19, 2026 TeamPCP uses the new credentials to force-push previous trivy-action releases, now containing info-stealer malware. Anyone using Trivy in their GitHub actions had their secrets stolen, including GitHub PATs, database credentials, Cloud infra creds, and more.  In some cases the credentials were exfiltrated using the breached organization's own GitHub, creating new repos and commiting the findings.
+- 

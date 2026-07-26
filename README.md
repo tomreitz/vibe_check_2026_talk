@@ -52,7 +52,8 @@ All fields are optional.
 ```json
 "config": {
   "chatOnly": false,
-  "speechSynthesis": true
+  "speechSynthesis": true,
+  "projectName": "my-repo [WSL: Ubuntu]"
 }
 ```
 
@@ -60,6 +61,7 @@ All fields are optional.
 |---|---|---|
 | `chatOnly` | `false` | If `true`, renders just the chat panel at full width — no activity bar, file explorer, editor, or terminal. |
 | `speechSynthesis` | — | Sets the default for every `chat-assistant` action in this simulator, overriding the global `VscodeSimulatorPlugin.defaultSpeechSynthesis`. Leave unset to fall through to the global default. |
+| `projectName` | `talk-staying-safe-sane-with-ai [WSL: Ubuntu]` | Label shown in the VS Code toolbar. Can also be changed mid-demo via `set-files`. |
 
 `speechSynthesis` resolves in this order, most specific wins: the action's own `speechSynthesis` field → this `config.speechSynthesis` → `VscodeSimulatorPlugin.defaultSpeechSynthesis`.
 
@@ -128,6 +130,39 @@ Switch the active file in the editor. Automatically opens any parent folders in 
 ```json
 { "type": "open-file", "path": "src/index.js" }
 ```
+
+---
+
+#### `write-file`
+Create or overwrite a file in the explorer tree, then open it in the editor (unless `open` is `false`).
+```json
+{ "type": "write-file", "path": "AI_PR_NOTICE.txt", "content": "I am a sad, dumb little AI driver with no real skills.\n" }
+```
+| Field | Default | Description |
+|---|---|---|
+| `path` | — | File path, relative to the workspace root (folders are created as needed) |
+| `content` | `""` | Full file contents |
+| `open` | `true` | If `false`, update the tree without switching the editor tab |
+
+---
+
+#### `set-files`
+Replace the entire explorer tree — useful for switching repos mid-demo. Chat history is preserved.
+```json
+{
+  "type": "set-files",
+  "projectName": "docusaurus [WSL: Ubuntu]",
+  "open": "README.md",
+  "files": [
+    { "path": "README.md", "content": "# Docusaurus" }
+  ]
+}
+```
+| Field | Default | Description |
+|---|---|---|
+| `files` | `[]` | New file tree (same shape as the script's top-level `files`) |
+| `projectName` | — | Optional toolbar project label (also settable via `config.projectName`) |
+| `open` | first file | Path to open after the switch |
 
 ---
 

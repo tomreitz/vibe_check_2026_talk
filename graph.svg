@@ -1,0 +1,222 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="100%" height="100%" style="background-color: #0d1117; font-family: 'Segoe UI', Helvetica, Arial, sans-serif;">
+  
+  <!-- DEFINITIONS FOR GLOWS AND ARROWS -->
+  <defs>
+    <linearGradient id="botGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7b72" />
+      <stop offset="100%" stop-color="#d73a49" />
+    </linearGradient>
+    <linearGradient id="trivyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#58a6ff" />
+      <stop offset="100%" stop-color="#1f6feb" />
+    </linearGradient>
+    <linearGradient id="pcpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f2cc60" />
+      <stop offset="100%" stop-color="#d4a72c" />
+    </linearGradient>
+    <linearGradient id="victimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7b72" />
+      <stop offset="100%" stop-color="#f85149" />
+    </linearGradient>
+    
+    <marker id="arrow-bold" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#58a6ff"/>
+    </marker>
+    <marker id="arrow-fade" viewBox="0 0 10 10" refX="20" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#30363d"/>
+    </marker>
+  </defs>
+
+  <!-- BACKGROUND TEXT / GRID EFFECT -->
+  <g stroke="#161b22" stroke-width="1">
+    <line x1="100" y1="0" x2="100" y2="600" />
+    <line x1="320" y1="0" x2="320" y2="600" />
+    <line x1="550" y1="0" x2="550" y2="600" />
+    <line x1="780" y1="0" x2="780" y2="600" />
+  </g>
+
+  <!-- TIMELINE HEADERS -->
+  <text x="100" y="40" fill="#8b949e" font-size="12" font-weight="600" letter-spacing="1">PHASE 1: FEB 2026</text>
+  <text x="100" y="60" fill="#ff7b72" font-size="16" font-weight="bold">AI Bot Mass Attack</text>
+
+  <text x="435" y="40" fill="#8b949e" font-size="12" font-weight="600" letter-spacing="1">PHASE 2: CLEANUP LULL</text>
+  <text x="435" y="60" fill="#f2cc60" font-size="16" font-weight="bold">The Key Interception</text>
+
+  <text x="780" y="40" fill="#8b949e" font-size="12" font-weight="600" letter-spacing="1">PHASE 3: MARCH 19, 2026</text>
+  <text x="780" y="60" fill="#f85149" font-size="16" font-weight="bold">Supply Chain Explosion</text>
+
+  <!-- ==================== BACKGROUND / FADED GRAPH SYSTEM ==================== -->
+  <!-- Faded Links (Other victims of the Feb bot) -->
+  <g stroke="#21262d" stroke-width="1.5" marker-end="url(#arrow-fade)">
+    <line x1="100" y1="300" x2="200" y2="150" />
+    <line x1="100" y1="300" x2="180" y2="220" />
+    <line x1="100" y1="300" x2="160" y2="420" />
+    <line x1="100" y1="300" x2="220" y2="480" />
+    
+    <!-- Faded Links from other exploits to nowhere or dead ends -->
+    <line x1="200" y1="150" x2="350" y2="130" />
+    <line x1="180" y1="220" x2="350" y2="200" />
+  </g>
+
+  <!-- Faded Nodes (Other companies hit in Feb) -->
+  <g fill="#161b22" stroke="#30363d" stroke-width="1.5">
+    <circle cx="200" cy="150" r="10" />
+    <circle cx="180" cy="220" r="12" />
+    <circle cx="160" cy="420" r="9" />
+    <circle cx="220" cy="480" r="11" />
+    <circle cx="350" cy="130" r="8" />
+    <circle cx="350" cy="200" r="10" />
+  </g>
+  <g fill="#8b949e" font-size="10">
+    <text x="215" y="153">Other Target A</text>
+    <text x="195" y="224">Other Target B</text>
+    <text x="175" y="423">Other Target C</text>
+  </g>
+
+  <!-- Faded Links (March downstream victims of OTHER unannounced hacks) -->
+  <g stroke="#21262d" stroke-width="1.5">
+    <line x1="780" y1="160" x2="900" y2="100" />
+    <line x1="780" y1="160" x2="920" y2="180" />
+    <line x1="780" y1="440" x2="890" y2="480" />
+    <line x1="780" y1="440" x2="910" y2="410" />
+  </g>
+  <g fill="#161b22" stroke="#30363d" stroke-width="1.5">
+    <circle cx="900" cy="100" r="8" />
+    <circle cx="920" cy="180" r="8" />
+    <circle cx="890" cy="480" r="8" />
+    <circle cx="910" cy="410" r="8" />
+  </g>
+
+
+  <!-- ==================== BOLD / MAIN THROUGH-LINE GRAPH ==================== -->
+  
+  <!-- CONNECTIONS (LINES) -->
+  <!-- Bot to Trivy Initial Breach -->
+  <line x1="100" y1="300" x2="280" y2="320" stroke="#58a6ff" stroke-width="4" marker-end="url(#arrow-bold)" />
+  
+  <!-- Bot data funnel to TeamPCP -->
+  <line x1="100" y1="300" x2="450" y2="200" stroke="#ff7b72" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
+  
+  <!-- Trivy Breach to Rotation/Interception -->
+  <line x1="280" y1="320" x2="480" y2="350" stroke="#58a6ff" stroke-width="4" marker-end="url(#arrow-bold)" />
+  
+  <!-- TeamPCP spying on the Rotation -->
+  <line x1="450" y1="200" x2="480" y2="350" stroke="#f2cc60" stroke-width="3" marker-end="url(#arrow-bold)" />
+  
+  <!-- Intercepted Keys to March Poisoning -->
+  <line x1="480" y1="350" x2="680" y2="300" stroke="#58a6ff" stroke-width="4" marker-end="url(#arrow-bold)" />
+  
+  <!-- TeamPCP executing March Attack -->
+  <line x1="450" y1="200" x2="680" y2="300" stroke="#f2cc60" stroke-width="2" stroke-dasharray="4 4" opacity="0.7" />
+
+  <!-- Supply Chain Fan-out (Poisoned Trivy to Massive Victim Base) -->
+  <g stroke="#f85149" stroke-width="3" marker-end="url(#arrow-bold)">
+    <line x1="680" y1="300" x2="840" y2="220" />
+    <line x1="680" y1="300" x2="860" y2="280" />
+    <line x1="680" y1="300" x2="850" y2="350" />
+    <line x1="680" y1="300" x2="820" y2="420" />
+    
+    <!-- Secondary fan out from victims (Stolen cloud creds/PATs) -->
+    <line x1="840" y1="220" x2="940" y2="210" stroke-width="1.5" />
+    <line x1="860" y1="280" x2="950" y2="290" stroke-width="1.5" />
+    <line x1="850" y1="350" x2="930" y2="370" stroke-width="1.5" />
+  </g>
+
+
+  <!-- NODES (CIRCLES & LABELS) -->
+  
+  <!-- NODE 1: Hackerbot-Claw -->
+  <g transform="translate(100, 300)">
+    <circle cx="0" cy="0" r="28" fill="url(#botGrad)" stroke="#ff9e96" stroke-width="2" />
+    <!-- Bot Icon Minimalized -->
+    <path d="M-10,-5 L10,-5 L10,10 L-10,10 Z M-6,2 L-2,2 M2,2 L6,2" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <text x="0" y="45" fill="#ff7b72" font-size="13" font-weight="bold" text-anchor="middle">hackerbot-claw</text>
+    <text x="0" y="60" fill="#8b949e" font-size="11" text-anchor="middle">Autonomous AI Agent</text>
+  </g>
+
+  <!-- NODE 2: Trivy First Breach -->
+  <g transform="translate(280, 320)">
+    <circle cx="0" cy="0" r="22" fill="url(#trivyGrad)" stroke="#79b8ff" stroke-width="2" />
+    <text x="-25" y="-32" fill="#c9d1d9" font-size="13" font-weight="bold">Trivy Code Repo</text>
+    <text x="-25" y="-17" fill="#58a6ff" font-size="11" font-weight="bold">Initial Token Stolen</text>
+    <text x="-25" y="-2" fill="#8b949e" font-size="10">Repo temporarily privatized;</text>
+    <text x="-25" y="11" fill="#8b949e" font-size="10">178 history releases deleted</text>
+  </g>
+
+  <!-- NODE 3: TeamPCP Humans -->
+  <g transform="translate(450, 200)">
+    <circle cx="0" cy="0" r="24" fill="url(#pcpGrad)" stroke="#fff" stroke-width="1" opacity="0.9"/>
+    <!-- Human Group Icon Minimalized -->
+    <circle cx="0" cy="-4" r="5" fill="#0d1117"/>
+    <path d="M-10,10 C-10,3 10,3 10,10 Z" fill="#0d1117"/>
+    <text x="0" y="-35" fill="#f2cc60" font-size="14" font-weight="bold" text-anchor="middle">TeamPCP</text>
+    <text x="0" y="-20" fill="#8b949e" font-size="11" text-anchor="middle">(Human Cyber-Group)</text>
+  </g>
+
+  <!-- NODE 4: The Flawed Rotation -->
+  <g transform="translate(480, 350)">
+    <circle cx="0" cy="0" r="18" fill="#161b22" stroke="#f2cc60" stroke-width="3" />
+    <!-- Key icon -->
+    <path d="M-6,0 L2,0 M2,-4 L2,4 M6,-2 L6,2" stroke="#f2cc60" stroke-width="2"/>
+    <text x="25" y="-5" fill="#f2cc60" font-size="12" font-weight="bold">Incomplete Key Rotation</text>
+    <text x="25" y="10" fill="#8b949e" font-size="11">Old keys active while generating new keys.</text>
+    <text x="25" y="23" fill="#ff7b72" font-size="10" font-style="italic">TeamPCP intercepts the BRAND NEW keys</text>
+  </g>
+
+  <!-- NODE 5: March 19 Poisoned Release -->
+  <g transform="translate(680, 300)">
+    <circle cx="0" cy="0" r="24" fill="url(#trivyGrad)" stroke="#ff7b72" stroke-width="2.5" />
+    <!-- Poison drop icon -->
+    <path d="M0,-10 C5,-2 8,2 8,6 C8,10 4,12 0,12 C-4,12 -8,10 -8,6 C-8,2 -5,-2 0,-10 Z" fill="#ff7b72"/>
+    <text x="0" y="-38" fill="#c9d1d9" font-size="13" font-weight="bold" text-anchor="middle">Trivy Poisoned Update</text>
+    <text x="0" y="-23" fill="#ff7b72" font-size="11" font-weight="bold" text-anchor="middle">Version v0.69.4 Released</text>
+  </g>
+
+
+  <!-- DOWNSTREAM VICTIMS WEB (The Blast Radius) -->
+  <g fill="url(#victimGrad)" stroke="#ff9e96" stroke-width="1.5">
+    <circle cx="840" cy="220" r="14" />
+    <circle cx="860" cy="280" r="16" />
+    <circle cx="850" cy="350" r="15" />
+    <circle cx="820" cy="420" r="14" />
+  </g>
+  
+  <!-- Cloud Infrastructure/Exfiltrated labels -->
+  <g fill="#8b949e" font-size="11" font-weight="500">
+    <text x="865" y="215" fill="#ff7b72">Enterprise Victim 1</text>
+    <text x="865" y="230" font-size="10">Cloud Infrastructure Compromised</text>
+    
+    <text x="885" y="275" fill="#ff7b72">Tech Corp Victim 2</text>
+    <text x="885" y="290" font-size="10">GitHub Master Keys Stolen</text>
+    
+    <text x="875" y="348" fill="#ff7b72">Bank / FinTech 3</text>
+    <text x="875" y="363" font-size="10">Database Credentials Leaked</text>
+    
+    <text x="845" y="420" fill="#ff7b72">Hundreds More Orgs...</text>
+    <text x="845" y="435" font-size="10" font-style="italic">Infected silently via CI/CD pipelines</text>
+  </g>
+
+  <!-- LEGEND -->
+  <g transform="translate(50, 530)" font-size="11" fill="#8b949e">
+    <rect x="0" y="0" width="900" height="45" fill="#161b22" rx="6" stroke="#30363d"/>
+
+    <circle cx="20" cy="22" r="8" fill="url(#botGrad)"/>
+    <text x="35" y="26" font-weight="bold" fill="#ff7b72">AI Bot</text>
+
+    <circle cx="120" cy="22" r="8" fill="url(#trivyGrad)"/>
+    <text x="135" y="26" font-weight="bold" fill="#58a6ff">Trivy Path</text>
+
+    <circle cx="250" cy="22" r="8" fill="url(#pcpGrad)"/>
+    <text x="265" y="26" font-weight="bold" fill="#f2cc60">TeamPCP</text>
+
+    <circle cx="370" cy="22" r="8" fill="url(#victimGrad)"/>
+    <text x="385" y="26" font-weight="bold" fill="#f85149">Victims</text>
+
+    <line x1="480" y1="22" x2="510" y2="22" stroke="#58a6ff" stroke-width="3" marker-end="url(#arrow-bold)"/>
+    <text x="520" y="26">Compromise path</text>
+
+    <line x1="660" y1="22" x2="700" y2="22" stroke="#f2cc60" stroke-width="2" stroke-dasharray="4 4"/>
+    <text x="710" y="26">Human coordination</text>
+  </g>
+</svg>
+
