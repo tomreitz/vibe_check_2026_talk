@@ -461,6 +461,7 @@ function VscodeSimulator({ script, onReady }) {
   const isRunningRef = React.useRef(false);
   const latestScriptRef = React.useRef(script);
   const chatPanelBodyRef = React.useRef(null);
+  const terminalPanelBodyRef = React.useRef(null);
 
   latestScriptRef.current = script;
 
@@ -792,18 +793,20 @@ function VscodeSimulator({ script, onReady }) {
     }
   }, [hasMoreSteps, nextStep, onReady, prevStep, activate, deactivate]);
 
-  // Auto-scroll: watch the panel-body for any DOM change and immediately scroll to the bottom.
+  // Auto-scroll: watch panel bodies for any DOM change and immediately scroll to the bottom.
   // MutationObserver fires as a browser microtask — outside React's rendering cycle — so it
-  // avoids all timing issues with useEffect/useLayoutEffect. It also only touches this one
-  // element, unlike scrollIntoView() which walks up to every scrollable ancestor.
+  // avoids all timing issues with useEffect/useLayoutEffect. It also only touches these
+  // elements, unlike scrollIntoView() which walks up to every scrollable ancestor.
   React.useEffect(() => {
-    const el = chatPanelBodyRef.current;
-    if (!el) return;
-    const observer = new MutationObserver(() => {
-      el.scrollTop = el.scrollHeight;
+    const panels = [chatPanelBodyRef.current, terminalPanelBodyRef.current].filter(Boolean);
+    const observers = panels.map((el) => {
+      const observer = new MutationObserver(() => {
+        el.scrollTop = el.scrollHeight;
+      });
+      observer.observe(el, { childList: true, subtree: true, characterData: true });
+      return observer;
     });
-    observer.observe(el, { childList: true, subtree: true });
-    return () => observer.disconnect();
+    return () => observers.forEach((observer) => observer.disconnect());
   }, []);
 
   const activeIndex = actionIndexRef.current;
@@ -867,7 +870,7 @@ function VscodeSimulator({ script, onReady }) {
           ),
           React.createElement('div', { className: 'panel terminal-panel' },
             React.createElement('div', { className: 'panel-header' }, 'Terminal'),
-            React.createElement('div', { className: 'panel-body terminal-body' },
+            React.createElement('div', { className: 'panel-body terminal-body', ref: terminalPanelBodyRef },
               terminalOutput.map((line, index) => {
                 if (line.type === 'command') {
                   return React.createElement('div', { key: `command-${index}`, className: 'terminal-line command' },
