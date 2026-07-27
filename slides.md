@@ -159,7 +159,7 @@ with AI, you can now
 
 Note:
 - Maybe this is why so much feels subtly broken right now — our trust instincts, our norms, our sense of "this person did the work" all quietly relied on that bundle.
-- AI has collapsed the cost of *making* things. It has not collapsed the cost of *understanding* them, *maintaining* them, or *being responsible* for them — if anything, it raised those."
+- AI has collapsed the cost of *making* things. It has not collapsed the cost of *understanding* them, *maintaining* them, or *being responsible* for them — if anything, it raised those.
 ---
 
 ## Dependence
@@ -183,7 +183,7 @@ Note:
 - The honest question isn't "am I using AI to do things I couldn't do myself." It's "am I offloading the *task*, or the *understanding of the task*?"
 ---
 
-## Maintainance
+## Maintenance
 
 - Load-bearing artifacts (both AI- and human-generated) need maintenance.
 - Humans must know they exist, and how they work.
@@ -238,7 +238,7 @@ Note:
       { type: "chat-wait", duration: 2000, speed: 60 },
       { type: "chat-assistant", text: "I can give you a clean line, but you might not want mine — you'll want the one that's true to your company. What do you actually value here?", delayBefore: 600 },
       { type: "pause" },
-      { type: "chat-user", text: "Well, one of our company vlues is we are \"respectfully human-centered.\"", speed: 50 },
+      { type: "chat-user", text: "Well, one of our company values is we are \"respectfully human-centered.\"", speed: 50 },
       { type: "chat-wait", duration: 2000, speed: 60 },
       { type: "chat-assistant", text: "So maybe this: thoughtful use is remembering there's always a _human_ on the other end of AI work - someone who inherits code, shares responsibility for a process, or must check correctness.", delayBefore: 600 },
     ]
@@ -254,7 +254,7 @@ Note:
 <!-- .slide: data-background-color="#B9C838" -->
 
 Note:
-- "Let's shift gears a bit and look at some examples of real ways AI is impacting software and security in the wild.
+- Let's shift gears a bit and look at some examples of real ways AI is impacting software and security in the wild.
 
 ---
 
@@ -494,7 +494,7 @@ Suppose Mark is building a new business "Salad Surprises!" where he buys salad k
 
 ## Supply-chain attack
 
-Unfortunately, Mark is vulnerable to a supply-chain attck.
+Unfortunately, Mark is vulnerable to a supply-chain attack.
 
 ![salad-surprise](./images/supply-chain-attack-2.png)
 
@@ -546,7 +546,7 @@ The RAT stole the Axios maintainer's NPM token. Fake versions of Axios were publ
 
 This was a standard supply chain attack, made faster and more convincing with AI.
 
-- Would you be able to spot AI generated deepfakes and slack messages?
+- Would you be able to spot AI generated deepfakes and Slack messages?
 - How would you know if AI used a compromised package in your code?
 
 ---
@@ -596,15 +596,15 @@ This was a standard supply chain attack, made faster and more convincing with AI
 
 ---
 
-## Trivy VS code extension
+## Trivy VS Code extension
 
-**February 27-18, 20267**: A compromized Trivy VS Code extension is available.  This version modifies AGENTS.md including instructions to find an exfiltrate secrets.
+**February 27-28, 2026**: A compromised Trivy VS Code extension is available. This version modifies AGENTS.md including instructions to find and exfiltrate secrets.
 
 ![ai-poison](./images/ai-poison.png)
 
 ---
 
-**March 1, 2026**: Trivy discovers the unauthorized activitity and rotates their secrets.
+**March 1, 2026**: Trivy discovers the unauthorized activity and rotates their secrets.
 
 ---
 
@@ -616,17 +616,17 @@ Unfortunately, they didn't revoke the old credentials first, and attackers were 
 
 ---
 
-**March 19, 2026**: Attackers used the new creds to attack Trivy's customers again.  
+**March 19, 2026**: Attackers used the new creds to attack Trivy's customers again.
 - 76 of 77 releases were force-pushed to include malicious code.
 - Anyone running nearly any version of Trivy's GitHub Action was affected.
 - The malicious code ran silently and didn't raise any errors or warnings.
-- The code exfiltrated secrets from thousands of customer's GitHub workflows, and developer's workstations
+- The code exfiltrated secrets from thousands of customers' GitHub workflows.
 
 ---
 
 ### Discussion
 
-AI agents are able to carry out attacks faster and more convincingly than ever.  They an also be poisoned to act on behalf of the attackers.
+AI agents are able to carry out attacks faster and more convincingly than ever. They can also be poisoned to act on behalf of the attackers.
 
 ![whats-in-your-agentsmd](./images/whats-in-your-agents.md.png)
 
@@ -642,7 +642,7 @@ Sometimes AI agents can be too helpful.
 
 ## Meta
 
-User's discovered they could convince Meta's AI suppport to reset other users passwords, including the Barack Obama White House account.
+Users discovered they could convince Meta's AI support to reset other users' passwords, including the Barack Obama White House account.
 
 ![meta-password-reset](./images/meta-password-reset.png)
 
@@ -674,7 +674,7 @@ I prefer to disable AI "memory" and provide context in-repo.  That's not perfect
 
 Mostly, be responsible.  
   - Review commands before allowing AI to execute
-  - Review code before comitting.
+  - Review code before committing.
   - Stay informed about new vulnerabilities.
 
 ---
