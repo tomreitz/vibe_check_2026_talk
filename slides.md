@@ -59,9 +59,9 @@
   * When the work is _load-bearing_, a human must understand and check it
 
   ### Part 2: Categories of failures in AI work
-  * Malicious tools/extensions
+  * Agent Poisoning
   * Supply-chain compromise
-  * Human error (e.g. typosquatting)
+  * Social Engineering (of agents)
 
   ### Part 3: Summary of challenges
   * Secrets and PII leaving a laptop
@@ -664,9 +664,20 @@ SafeChain attempts to protect us from vulnerabilities in dependencies. We requir
 
 ## Reduce blast radius
 
-Get agents out of our workstations.  Multiple streams of work on this.  Nothing to announce just yet.
+When AI goes wrong, how do we reduce the impact? 
 
-I prefer to disable AI "memory" and provide context in-repo.  That's not perfect, as we've seen.  Agents will still choose to look for answers in other repos on your computer.  Use micro-segmented workstations?
+There are multiple streams of work on this, but the idea is to limit the things AI agents have access to.
+
+Note:
+- IT working on something, Bjorn's containerization, at least one more.
+
+---
+
+## All code must be maintained
+
+As we've seen with Snyk, new vulnerabilities are found every day.  All code written by AI and humans needs to be maintained and updated over time. Not just code on the Internet, not just code written by Engineering.
+
+![snyk-issues](./images/snyk-issues.png)
 
 ---
 
