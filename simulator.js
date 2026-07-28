@@ -311,6 +311,48 @@ function flattenFiles(items, prefix) {
   return results;
 }
 
+// Insert or replace a file in a nested file-tree. Returns a new tree (immutable update).
+function upsertFile(items, filePath, content) {
+  const parts = filePath.split('/').filter(Boolean);
+  if (parts.length === 0) {
+    return items || [];
+  }
+
+  const upsertAt = (nodes, index) => {
+    const list = [...(nodes || [])];
+    const name = parts[index];
+    const isLast = index === parts.length - 1;
+
+    if (isLast) {
+      const existing = list.findIndex(item => !item.files && item.path === name);
+      if (existing >= 0) {
+        list[existing] = { path: name, content };
+      } else {
+        list.push({ path: name, content });
+      }
+      return list;
+    }
+
+    const folderKey = name + '/';
+    const folderIndex = list.findIndex(item => item.files && (item.path === name || item.path === folderKey));
+    if (folderIndex >= 0) {
+      const folder = list[folderIndex];
+      list[folderIndex] = {
+        path: folder.path.endsWith('/') ? folder.path : folder.path + '/',
+        files: upsertAt(folder.files, index + 1)
+      };
+    } else {
+      list.push({
+        path: folderKey,
+        files: upsertAt([], index + 1)
+      });
+    }
+    return list;
+  };
+
+  return upsertAt(items, 0);
+}
+
 function renderFileTree(items, prefix, depth, activePath, onSelect, openFolders, onToggleFolder) {
   const results = [];
   const basePad = 12 + depth * 14;
@@ -394,7 +436,13 @@ function highlightCode(content, language) {
   }
 }
 
+function defaultProjectName(script) {
+  return (script.config && script.config.projectName) || 'talk-staying-safe-sane-with-ai [WSL: Ubuntu]';
+}
+
 function VscodeSimulator({ script, onReady }) {
+  const [fileTree, setFileTree] = React.useState(() => script.files || []);
+  const [projectName, setProjectName] = React.useState(() => defaultProjectName(script));
   const [activePath, setActivePath] = React.useState(() => {
     const files = flattenFiles(script.files || []);
     return (files[0] && files[0].path) || '';
@@ -413,10 +461,11 @@ function VscodeSimulator({ script, onReady }) {
   const isRunningRef = React.useRef(false);
   const latestScriptRef = React.useRef(script);
   const chatPanelBodyRef = React.useRef(null);
+  const terminalPanelBodyRef = React.useRef(null);
 
   latestScriptRef.current = script;
 
-  const allFiles = React.useMemo(() => flattenFiles(script.files || []), [script.files]);
+  const allFiles = React.useMemo(() => flattenFiles(fileTree), [fileTree]);
 
   const activeFile = React.useMemo(() => {
     return allFiles.find(file => file.path === activePath) || allFiles[0] || { path: '', content: '' };
@@ -487,6 +536,33 @@ function VscodeSimulator({ script, onReady }) {
         setActivePath(action.path);
         openAncestorFolders(action.path);
         break;
+
+      case 'write-file': {
+        const path = action.path;
+        const content = action.content == null ? '' : action.content;
+        setFileTree(prev => upsertFile(prev, path, content));
+        if (action.open !== false) {
+          setActivePath(path);
+          openAncestorFolders(path);
+        }
+        break;
+      }
+
+      case 'set-files': {
+        const nextFiles = action.files || [];
+        setFileTree(nextFiles);
+        setOpenFolders(new Set());
+        if (action.projectName) {
+          setProjectName(action.projectName);
+        }
+        const first = flattenFiles(nextFiles)[0];
+        const nextPath = action.open || (first && first.path) || '';
+        setActivePath(nextPath);
+        if (nextPath) {
+          openAncestorFolders(nextPath);
+        }
+        break;
+      }
 
       case 'type-terminal': {
         const commitCommand = text => {
@@ -649,7 +725,10 @@ function VscodeSimulator({ script, onReady }) {
 
   const replayTo = React.useCallback(async targetIndex => {
     const actions = latestScriptRef.current.actions || [];
-    const firstFile = flattenFiles(latestScriptRef.current.files || [])[0];
+    const initialFiles = latestScriptRef.current.files || [];
+    const firstFile = flattenFiles(initialFiles)[0];
+    setFileTree(initialFiles);
+    setProjectName(defaultProjectName(latestScriptRef.current));
     setActivePath((firstFile && firstFile.path) || '');
     setTerminalOutput([{ type: 'separator' }]);
     setTerminalDraft('');
@@ -714,24 +793,27 @@ function VscodeSimulator({ script, onReady }) {
     }
   }, [hasMoreSteps, nextStep, onReady, prevStep, activate, deactivate]);
 
-  // Auto-scroll: watch the panel-body for any DOM change and immediately scroll to the bottom.
+  // Auto-scroll: watch panel bodies for any DOM change and immediately scroll to the bottom.
   // MutationObserver fires as a browser microtask — outside React's rendering cycle — so it
-  // avoids all timing issues with useEffect/useLayoutEffect. It also only touches this one
-  // element, unlike scrollIntoView() which walks up to every scrollable ancestor.
+  // avoids all timing issues with useEffect/useLayoutEffect. It also only touches these
+  // elements, unlike scrollIntoView() which walks up to every scrollable ancestor.
   React.useEffect(() => {
-    const el = chatPanelBodyRef.current;
-    if (!el) return;
-    const observer = new MutationObserver(() => {
-      el.scrollTop = el.scrollHeight;
+    const panels = [chatPanelBodyRef.current, terminalPanelBodyRef.current].filter(Boolean);
+    const observers = panels.map((el) => {
+      const observer = new MutationObserver(() => {
+        el.scrollTop = el.scrollHeight;
+      });
+      observer.observe(el, { childList: true, subtree: true, characterData: true });
+      return observer;
     });
-    observer.observe(el, { childList: true, subtree: true });
-    return () => observer.disconnect();
+    return () => observers.forEach((observer) => observer.disconnect());
   }, []);
 
   const activeIndex = actionIndexRef.current;
   const totalSteps = script.actions.length;
   const config = script.config || {};
   const chatOnly = config.chatOnly === true;
+  const agentName = config.agentName || 'Claude Code';
 
   return React.createElement('div', { className: 'vscode-shell' },
     React.createElement('div', { className: 'vscode-toolbar' },
@@ -741,7 +823,7 @@ function VscodeSimulator({ script, onReady }) {
         )
       ),
       React.createElement('div', { className: 'toolbar-right' },
-        React.createElement('span', { className: 'toolbar-project' }, 'talk-staying-safe-sane-with-ai [WSL: Ubuntu]')
+        React.createElement('span', { className: 'toolbar-project' }, projectName)
       )
     ),
     React.createElement('div', { className: 'vscode-main' },
@@ -763,7 +845,7 @@ function VscodeSimulator({ script, onReady }) {
         React.createElement('div', { className: 'sidebar-header' }, 'EXPLORER'),
         React.createElement('div', { className: 'sidebar-subtitle' }, 'WORKSPACE'),
         React.createElement('ul', { className: 'file-list' },
-          renderFileTree(script.files, '', 0, activePath, setActivePath, openFolders, toggleFolder)
+          renderFileTree(fileTree, '', 0, activePath, setActivePath, openFolders, toggleFolder)
         )
       ),
       React.createElement('div', { className: 'vscode-content' },
@@ -788,7 +870,7 @@ function VscodeSimulator({ script, onReady }) {
           ),
           React.createElement('div', { className: 'panel terminal-panel' },
             React.createElement('div', { className: 'panel-header' }, 'Terminal'),
-            React.createElement('div', { className: 'panel-body terminal-body' },
+            React.createElement('div', { className: 'panel-body terminal-body', ref: terminalPanelBodyRef },
               terminalOutput.map((line, index) => {
                 if (line.type === 'command') {
                   return React.createElement('div', { key: `command-${index}`, className: 'terminal-line command' },
@@ -809,7 +891,7 @@ function VscodeSimulator({ script, onReady }) {
           )
         ),
         React.createElement('div', { className: chatOnly ? 'panel chat-panel chat-panel-full' : 'panel chat-panel' },
-            React.createElement('div', { className: 'panel-header' }, 'Claude Code'),
+            React.createElement('div', { className: 'panel-header' }, agentName),
             React.createElement('div', { className: 'panel-body', ref: chatPanelBodyRef },
               chatMessages.map((message, index) => {
                 if (message.image) {
@@ -869,7 +951,7 @@ function VscodeSimulator({ script, onReady }) {
                 type: 'text',
                 className: 'chat-input',
                 value: chatDraftRole === 'user' ? chatDraft : '',
-                placeholder: 'Ask Claude Code...',
+                placeholder: 'Ask ' + agentName + '...',
                 readOnly: true,
                 onChange: function() {}
               }),

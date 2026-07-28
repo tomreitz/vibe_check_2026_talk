@@ -362,6 +362,9 @@ pre.code-content { font-size: 0.75rem; }
   flex-direction: column;
   gap: 2px;
   text-align: left;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .terminal-line.command {
