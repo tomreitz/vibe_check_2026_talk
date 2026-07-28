@@ -255,16 +255,17 @@ Press the `m` key while audio is playing to immediately mute it and move on to t
 ---
 
 #### `chat-prompt`
-Show a Claude Code-style permission prompt card and pause. **↓** (or clicking Yes) dismisses it and continues. No button is decorative.
+Show a Claude Code-style permission prompt card and pause. **↓** (or clicking Yes / Yes, allow all) dismisses it and continues. No button is decorative.
 ```json
 {
   "type": "chat-prompt",
   "title": "Allow: run a command",
   "command": "ls -al ./",
-  "description": "Check what files exist in the current directory"
+  "description": "Check what files exist in the current directory",
+  "allowAll": true
 }
 ```
-`command` and `description` are both optional.
+`command`, `description`, and `allowAll` are all optional. When `allowAll` is `true`, a **Yes, allow all** button is shown between Yes and No.
 
 ---
 

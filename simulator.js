@@ -680,7 +680,12 @@ function VscodeSimulator({ script, onReady }) {
       }
 
       case 'chat-prompt':
-        setChatPrompt({ title: action.title, command: action.command, description: action.description });
+        setChatPrompt({
+          title: action.title,
+          command: action.command,
+          description: action.description,
+          allowAll: action.allowAll === true
+        });
         return 'pause';
 
       case 'pause':
@@ -939,8 +944,13 @@ function VscodeSimulator({ script, onReady }) {
                           dangerouslySetInnerHTML: { __html: parseMarkdown(chatPrompt.description) }
                         })
                       : null,
-                    React.createElement('div', { className: 'chat-prompt-buttons' },
+                    React.createElement('div', {
+                      className: 'chat-prompt-buttons' + (chatPrompt.allowAll ? ' chat-prompt-buttons--allow-all' : '')
+                    },
                       React.createElement('button', { className: 'chat-prompt-yes', onClick: nextStep }, 'Yes'),
+                      chatPrompt.allowAll
+                        ? React.createElement('button', { className: 'chat-prompt-allow-all', onClick: nextStep }, 'Yes, allow all')
+                        : null,
                       React.createElement('button', { className: 'chat-prompt-no' }, 'No')
                     )
                   )

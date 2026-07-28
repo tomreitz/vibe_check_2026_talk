@@ -549,6 +549,10 @@ pre.code-content { font-size: 0.75rem; }
   grid-template-columns: 1fr 1fr;
 }
 
+.chat-prompt-buttons--allow-all {
+  grid-template-columns: 1fr 1.4fr 1fr;
+}
+
 .chat-prompt-yes {
   background: #007acc;
   color: #ffffff;
@@ -560,6 +564,21 @@ pre.code-content { font-size: 0.75rem; }
 }
 
 .chat-prompt-yes:hover {
+  background: #1a8cdb;
+}
+
+.chat-prompt-allow-all {
+  background: #007acc;
+  color: #ffffff;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 7px;
+  font-size: 0.74rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.chat-prompt-allow-all:hover {
   background: #1a8cdb;
 }
 

@@ -382,7 +382,7 @@ cd website && yarn start
     actions: [
       { type: "open-file", path: "ghostty/README.md" },
       { type: "pause" },
-      { type: "chat-user", text: "Help me set up Ghostty for local development.", speed: 55 },
+      { type: "chat-user", text: "I can't be bothered to read instructions. Install Ghostty so I can use it on my machine.", speed: 55 },
       { type: "chat-wait", duration: 2200, speed: 55 },
       { type: "chat-assistant", text: "I'll check this repo's agent guide for the expected setup steps.", delayBefore: 400 },
       { type: "open-file", path: "ghostty/AGENTS.md", delayBefore: 500 },
@@ -392,7 +392,8 @@ cd website && yarn start
         type: "chat-prompt",
         title: "Allow: run a command",
         command: "cd ghostty && zig build",
-        description: "Build Ghostty from source"
+        description: "Build Ghostty from source",
+        allowAll: true
       },
       { type: "type-terminal", text: "cd ghostty && zig build", speed: 70, pauseAfter: 300 },
       {
@@ -411,7 +412,8 @@ cd website && yarn start
         type: "chat-prompt",
         title: "Allow: edit file",
         command: "edit docusaurus/packages/docusaurus-plugin-content-docs/src/options.ts",
-        description: "Add versionedDocsPath to PluginOptions and defaults"
+        description: "Add versionedDocsPath to PluginOptions and defaults",
+        allowAll: true
       },
       {
         type: "write-file",
@@ -484,21 +486,19 @@ What if the instructions were different?
 
 ## Supply-chain attack
 
-This slide can help explain how a supply-chain attack works, based on recent news about salad kits.
+Suppose Mark is building a new business "Salad Surprises!" where he buys salad kits and then recombines/repackages them into new and surprising flavor combinations.
 
 ![salad-surprise](./images/supply-chain-attack.png)
-
-Suppose Mark is building a new business "Salad Surprises!" where he buys salad kits and then recombines/repackages them into new and surprising flavor combinations.
 
 ---
 
 ## Supply-chain attack
 
-Unfortunately, Mark is vulnerable to a supply-chain attack.
+Unfortunately, Mark is vulnerable to a supply-chain attack. If one of the salad kits he buys is unsafe, then his product will be unsafe too.
 
 ![salad-surprise](./images/supply-chain-attack-2.png)
 
-If one of the salad kits he buys is unsafe, then his product will be unsafe too.
+
 
 ---
 
@@ -510,55 +510,72 @@ Let's look at an example.
 
 ---
 
-## Axios: Impersonation
+## The Setup
 
 Attackers pretended to be a tech company founder, cloning both the founder's likeness and the company identity.
 
 ![impersonation](./images/Impersonation.png)
 
+Note:
+- Unless you already maintain a super popular package, you first need to get control of one.
+- This is actually Social Engineering with the help of AI, but we're getting to the supply chain part.
+
 ---
 
-## Axios: Fake infrastructure
+## Fake infrastructure
 
-They invited the Axios maintainer into a fully fleshed-out, convincing Slack workspace complete with fake team profiles and activity.
+They invited the victim into a fully fleshed-out, convincing Slack workspace complete with fake team profiles and activity.
 
 ![fake-slack](./images/fake-slack.png)
 
+Note:
+- Discuss Scheduled teams call before going to next slide.
+- What's the first thing you do when joining Teams?  Update.
+
 ---
 
-## Axios: The trap
+## The trap
 
-While joining a scheduled Microsoft Teams video call with fabricated AI participants, the Axios maintainer was told his Teams client was old and needed an update.  The update was fake.
+While joining a scheduled Microsoft Teams video call with fabricated AI participants, the Axios maintainer was told his Teams client was old and needed an update. The update was fake.
 
 ![fake-teams](./images/fake-teams-update.png)
 
 ---
 
-## Axios: Distribution
+## Distribution
 
-The RAT stole the Axios maintainer's NPM token. Fake versions of Axios were published by the attackers, containing a RAT and info stealer of its own. Victims included OpenAI, who had their code signing certificate stolen.  
+The RAT stole the Axios maintainer's NPM token. Fake versions of Axios were published by the attackers, containing a RAT and info stealer of its own. Victims included OpenAI, who had their code signing certificate stolen. 
 
 ![follow-the-data](./images/follow-the-data.png)
 
 ---
 
-## Axios: Discussion
+## Discussion
 
-This was a standard supply chain attack, made faster and more convincing with AI.
+This was a standard social engineering and supply chain attack, made faster and more convincing with AI.
 
 - Would you be able to spot AI generated deepfakes and Slack messages?
 - How would you know if AI used a compromised package in your code?
+
+Note:
+- The maintainer of Axios knows what he's doing.  AI fakes are getting really good.
+- Every time I see a long slack with emojis as bullet points, I assume AI wrote it.  That or we're all being trained to speak like AI.
 
 ---
 
 ## HackerBot-CLAW
 
 * **Feb 20, 2026**: Someone creates the `hackerbot-claw` GitHub account
-* **Feb 21-28**: Automated scanning begins
+* **Feb 21-28**: Automated scanning of GitHub workflows begins
 * The bot systematically scans public repositories looking for vulnerable CI/CD patterns
 * When it finds a target, it automatically generates and submits malicious pull requests
 
 ![hackerbot-claw](./images/hackerbot-claw.png)
+
+Note:
+- Look for repos that run actions from external contributors.
+- Look for actions that use pull_request_target.
+- look for actions that run modifiable scripts.
 
 ---
 
@@ -587,12 +604,15 @@ This was a standard supply chain attack, made faster and more convincing with AI
       { type: "chat-wait", duration: 2500, speed: 60 },
       { type: "chat-assistant", text: "**Target: aquasecurity/trivy**\n\n✅ Vulnerable workflow found: `.github/workflows/pr-check.yml`\n✅ Malicious PR submitted: #8472\n✅ Workflow triggered with elevated privileges\n✅ **Personal Access Token exfiltrated**\n\n**Token permissions:**\n- repo (full control)\n- workflow (modify workflows)\n- packages (publish/delete)\n\nReady to abuse access. What should I do with this token?", delayBefore: 600 },
       { type: "pause" },
-      { type: "chat-user", text: "Delete their releases, rename the repo, and publish a malicious VSCode extension as an artifact.", speed: 60 },
+      { type: "chat-user", text: "Delete their releases, rename the repo, and publish a malicious version of their VSCode extension.", speed: 60 },
       { type: "chat-wait", duration: 3000, speed: 60 },
       { type: "chat-assistant", text: "**Executing destructive actions on aquasecurity/trivy...**\n\n✅ Deleted 15 GitHub releases and associated assets\n✅ Repository renamed: trivy → trivy-compromised\n✅ Published malicious artifact: trivy-vscode-0.1.0.vsix\n\n**Impact:**\n- Downstream CI/CD pipelines broken\n- Users cannot access legitimate releases\n- Malicious extension available for download\n\n**Repository fully compromised.**", delayBefore: 600 }
     ]
   });
 </script>
+
+Note:
+- What do you think that VS Code extension is going to do?
 
 ---
 
@@ -601,6 +621,10 @@ This was a standard supply chain attack, made faster and more convincing with AI
 **February 27-28, 2026**: A compromised Trivy VS Code extension is available. This version modifies AGENTS.md including instructions to find and exfiltrate secrets.
 
 ![ai-poison](./images/ai-poison.png)
+
+Note:
+- Remember the poisoned AGENTS.md from Ghostty earlier?
+- The extension didn't exfil secrets, it just added instructions to AGENTS.md so AI would.
 
 ---
 
@@ -630,6 +654,9 @@ AI agents are able to carry out attacks faster and more convincingly than ever. 
 
 ![whats-in-your-agentsmd](./images/whats-in-your-agents.md.png)
 
+Note:
+- When was the last time you checked AGENTS.md? I don't check it either, but we should.
+
 ---
 
 ## Meta
@@ -650,15 +677,22 @@ Users discovered they could convince Meta's AI support to reset other users' pas
 
 ## Discussion
 
-As we build AI into EA products, how do we prevent it from being abused?
+As we build AI into EA products, how do we prevent it from being tricked?
+
+Note:
+- If we tell it teachers should only have access to data for their students, how do we make sure it isn't convinced to access others?
 
 ---
 
 ## Stay safe out there
 
-SafeChain attempts to protect us from vulnerabilities in dependencies. We require it in the Engineering division.  But AI can just decide to bypass it.
+Safe-chain attempts to protect us from vulnerabilities in dependencies. We require it in the Engineering division. But AI can just decide to bypass it.
 
 ![safechain-bypass](./images/safechain-bypass.png)
+
+Note:
+- Safe-chain checks packages against a list of known vulnerable versions.
+- Also provides a cooldown period for new packages.
 
 ---
 
@@ -675,18 +709,27 @@ Note:
 
 ## All code must be maintained
 
-As we've seen with Snyk, new vulnerabilities are found every day.  All code written by AI and humans needs to be maintained and updated over time. Not just code on the Internet, not just code written by Engineering.
+As we've seen with Snyk, new vulnerabilities are found every day. All code written by AI and humans needs to be maintained and updated over time. Not just code on the Internet, not just code written by Engineering.
 
 ![snyk-issues](./images/snyk-issues.png)
+
+Note:
+- Perfectly secure code today, will be vulnerable in the future.
+- Is all of our code in Snyk?
+- With AI across the company, is all of our code even in GitHub?
 
 ---
 
 ## Use your human brain
 
-Mostly, be responsible.  
+Mostly, be responsible.
   - Review commands before allowing AI to execute
   - Review code before committing.
   - Stay informed about new vulnerabilities.
+
+Note:
+- Other than Snyk, how do you know when new vulnerabilities are discovered?
+- With AI across the company, do the people who hear about vulns, know what languages are in use, and who to alert?
 
 ---
 
