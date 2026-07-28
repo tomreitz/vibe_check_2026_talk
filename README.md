@@ -2,6 +2,8 @@ This repo contains code for a [markdown-slides](https://github.com/dadoomer/mark
 
 After cloning this repo, run `python3 -m http.server` to serve the slides, then visit http://localhost:8000/.
 
+Slides should also be available at https://tomreitz.github.io/vibe_check_2026_talk
+
 Slide content is in `slides.md`, and includes some examples of the VScodeSimulator component (documented below).
 
 ---
